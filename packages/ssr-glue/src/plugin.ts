@@ -2,8 +2,6 @@ import { IncomingMessage } from 'http'
 import { EventDispatcher } from 'EventDispatcher'
 import { ServerSideEventMap, ClientSideEventMap } from './eventMap'
 
-type PluginType = 'server' | 'client'
-
 /**
  * The universal event-bus object for Inter-plugin communication.
  */
@@ -16,11 +14,14 @@ export type ClientSidePluginHookContext = {
   eventBus: EventDispatcher<ClientSideEventMap>
 }
 
+type PluginName = string
+type EventName = string
+
 export type BasePlugin = {
   /**
    * The plugin name, should follow the shape of `{plugin-type}:{plugin-id}`
    */
-  name: `${PluginType}:${string}`
+  name: `${PluginName}/${EventName}`
 }
 
 /**
