@@ -2,6 +2,7 @@
   "name": "@ssr-glue/client-libs",
   "author": "yaquawa",
   "version": "1.0.4",
+  "description": "The client side libs for SSR-Glue",
   "license": "MIT",
   "main": "dist/index.js",
   "source": "src/index.ts",
