@@ -1,11 +1,12 @@
 {
-  "name": "ssr-glue",
+  "name": "ssr-glue-monorepo",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "build": "scripts/build.sh"
+    "build": "scripts/build.sh",
+    "test": "jest"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
