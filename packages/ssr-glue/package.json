@@ -1,7 +1,7 @@
 {
   "name": "ssr-glue",
   "author": "yaquawa",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "license": "MIT",
   "description": "The shared components of ssr-glue framework",
   "main": "dist/index.js",

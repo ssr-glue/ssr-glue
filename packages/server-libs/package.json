@@ -1,7 +1,7 @@
 {
   "name": "@ssr-glue/server-libs",
   "author": "yaquawa",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "license": "MIT",
   "main": "dist/index.js",
   "source": "src/index.ts",
@@ -26,6 +26,6 @@
     "release": "npx git-ensure -a && npx bumpp --commit --tag --push"
   },
   "dependencies": {
-    "ssr-glue": "^1.0.3"
+    "ssr-glue": "^1.0.4"
   }
 }
