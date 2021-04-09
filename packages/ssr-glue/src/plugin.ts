@@ -14,14 +14,11 @@ export type ClientSidePluginHookContext = {
   eventBus: EventDispatcher<ClientSideEventMap>
 }
 
-type PluginName = string
-type EventName = string
-
 export type BasePlugin = {
   /**
    * The plugin name, should follow the shape of `{plugin-type}:{plugin-id}`
    */
-  name: `${PluginName}/${EventName}`
+  name: string
 }
 
 /**
