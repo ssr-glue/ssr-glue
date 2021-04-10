@@ -10,7 +10,7 @@ export class ServerSidePluginContainer extends BasePluginContainer<
    *
    * @param html The basic HTML
    */
-  async transformHtml(html: string): Promise<string> {
+  async triggerTransformHtml(html: string): Promise<string> {
     for (const plugin of this.plugins) {
       if (!plugin.transformHtml) {
         continue
@@ -27,13 +27,13 @@ export class ServerSidePluginContainer extends BasePluginContainer<
    *
    * @param request The incoming request.
    */
-  async triggerOnRequest(request: IncomingMessage): Promise<void> {
+  async triggerRequest(request: IncomingMessage): Promise<void> {
     for (const plugin of this.plugins) {
-      if (!plugin.onRequest) {
+      if (!plugin.request) {
         continue
       }
 
-      await plugin.onRequest.bind(this.pluginHookContext)(request)
+      await plugin.request.bind(this.pluginHookContext)(request)
     }
   }
 }

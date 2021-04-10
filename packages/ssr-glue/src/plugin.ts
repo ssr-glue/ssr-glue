@@ -26,22 +26,30 @@ export type BasePlugin = {
  */
 export type ServerSidePlugin = BasePlugin & {
   /**
-   * The hook be called after the plugin be created.
+   * The hook is called after the plugin be created.
    */
-  onCreated?(this: ServerSidePluginHookContext): void
+  created?(this: ServerSidePluginHookContext): void
 
   /**
-   * The hook be called on every incoming request.
+   * The hook is called after the `created` hook.
+   * Bootstrapping works should be executed at here.
    *
-   * previous hook: `onCreated`
+   * previous hook: `created`
+   */
+  boot?(this: ServerSidePluginHookContext): void | Promise<void>
+
+  /**
+   * The hook is called on every incoming request.
+   *
+   * previous hook: `boot`
    * @param request
    */
-  onRequest?(this: ServerSidePluginHookContext, request: IncomingMessage): void | Promise<void>
+  request?(this: ServerSidePluginHookContext, request: IncomingMessage): void | Promise<void>
 
   /**
-   * The hook be used to transform the outgoing HTML.
+   * The hook is used to transform the outgoing HTML.
    *
-   * previous hook: `onRequest`
+   * previous hook: `request`
    * @param html
    */
   transformHtml?(this: ServerSidePluginHookContext, html: string): string | Promise<string>
@@ -54,7 +62,15 @@ export type ClientSidePlugin = BasePlugin & {
   /**
    * The hook be called after the plugin be created.
    */
-  onCreated?(this: ClientSidePluginHookContext): void
+  created?(this: ClientSidePluginHookContext): void
+
+  /**
+   * The hook is called after the `created` hook.
+   * Bootstrapping works should be executed at here.
+   *
+   * previous hook: `created`
+   */
+  boot?(this: ClientSidePluginHookContext): void | Promise<void>
 }
 
 /**
@@ -73,16 +89,31 @@ export abstract class BasePluginContainer<
   }
 
   /**
-   * Trigger the all registered `onCreated` hooks of plugins.
+   * Trigger the all registered `created` hooks of plugins.
    * This method should be called after all plugins be created.
    */
-  triggerOnCreated() {
+  triggerCreated() {
     for (const plugin of this.plugins) {
-      if (!plugin.onCreated) {
+      if (!plugin.created) {
         continue
       }
 
-      plugin.onCreated.bind(this.pluginHookContext)()
+      plugin.created.bind(this.pluginHookContext)()
     }
+  }
+
+  /**
+   * Trigger the all registered `boot` hooks of plugins.
+   * This method should be called after all plugins be created.
+   */
+  async triggerBoot(): Promise<void> {
+    const promises = this.plugins
+      .filter((plugin) => plugin.boot)
+      .map((plugin) => {
+        const result = plugin!.boot!.bind(this.pluginHookContext)()
+        return result instanceof Promise ? result : Promise.resolve()
+      })
+
+    await Promise.all(promises)
   }
 }

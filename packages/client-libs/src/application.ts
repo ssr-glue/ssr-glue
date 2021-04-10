@@ -14,7 +14,11 @@ export class ClientSideApplication {
     this.eventBus = new EventDispatcher<ClientSideEventMap>()
     this.pluginContainer = new ClientSidePluginContainer(plugins, this.getHookContext())
 
-    this.pluginContainer.triggerOnCreated()
+    this.pluginContainer.triggerCreated()
+  }
+
+  async boot(): Promise<void> {
+    await this.pluginContainer.triggerBoot()
   }
 
   getHookContext(): ClientSidePluginHookContext {

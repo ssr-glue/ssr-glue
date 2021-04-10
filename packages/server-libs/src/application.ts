@@ -15,7 +15,14 @@ export class ServerSideApplication {
   constructor({ plugins = [] }: Partial<ServerAppOptions>) {
     this.eventBus = new EventDispatcher<ServerSideEventMap>()
     this.pluginContainer = new ServerSidePluginContainer(plugins, this.getHookContext())
-    this.pluginContainer.triggerOnCreated()
+    this.pluginContainer.triggerCreated()
+  }
+
+  /**
+   * Boot the application, should be called after application was created.
+   */
+  async boot(): Promise<void> {
+    await this.pluginContainer.triggerBoot()
   }
 
   /**
@@ -24,9 +31,9 @@ export class ServerSideApplication {
    * @param request
    */
   async render(baseHtml: string, request: IncomingMessage): Promise<string> {
-    await this.pluginContainer.triggerOnRequest(request)
+    await this.pluginContainer.triggerRequest(request)
 
-    return this.pluginContainer.transformHtml(baseHtml)
+    return this.pluginContainer.triggerTransformHtml(baseHtml)
   }
 
   getHookContext(): ServerSidePluginHookContext {

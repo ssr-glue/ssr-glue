@@ -7,24 +7,32 @@ declare module 'ssr-glue' {
 }
 
 export function mockPlugins() {
-  const onCreatedHandler = jest.fn()
-  const onRequestHandler = jest.fn()
+  const createdHandler = jest.fn()
+  const requestHandler = jest.fn()
+  const bootHandler = jest.fn()
   const barPluginCreatedHandler = jest.fn()
 
   function fooPlugin(): ServerSidePlugin {
     return {
       name: 'server:foo',
-      onCreated() {
+
+      created() {
         this.eventBus.on('barPluginCreated', (event) => {
           barPluginCreatedHandler(event)
           return true
         })
 
-        onCreatedHandler('onCreated')
+        createdHandler('onCreated')
       },
-      onRequest(request) {
-        onRequestHandler(request)
+
+      boot() {
+        bootHandler('booting')
       },
+
+      request(request) {
+        requestHandler(request)
+      },
+
       async transformHtml(html: string) {
         return html.replace('foo', 'new foo')
       },
@@ -34,11 +42,13 @@ export function mockPlugins() {
   function barPlugin(): ServerSidePlugin {
     return {
       name: 'server:foo',
-      onCreated() {
-        onCreatedHandler('onCreated')
+
+      created() {
+        createdHandler('onCreated')
 
         this.eventBus.trigger('barPluginCreated', { foo: 'bar' })
       },
+
       transformHtml(html: string) {
         return html.replace('bar', 'new bar')
       },
@@ -47,8 +57,9 @@ export function mockPlugins() {
 
   return {
     barPluginCreatedHandler,
-    onCreatedHandler,
-    onRequestHandler,
+    createdHandler,
+    requestHandler,
+    bootHandler,
     fooPlugin,
     barPlugin,
   }
