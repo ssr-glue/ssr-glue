@@ -1,7 +1,7 @@
 {
   "name": "@ssr-glue/server-libs",
   "author": "yaquawa",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "license": "MIT",
   "description": "The server side libs for SSR-Glue",
   "main": "dist/index.js",
@@ -27,7 +27,7 @@
     "release": "npx git-ensure -a && npx bumpp --commit --tag --push"
   },
   "dependencies": {
-    "ssr-glue": "^1.0.5",
-    "EventDispatcher": "^3.0.0"
+    "EventDispatcher": "^3.0.0",
+    "ssr-glue": "^1.0.6"
   }
 }
