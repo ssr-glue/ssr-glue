@@ -27,6 +27,6 @@
     "release": "npx git-ensure -a && npx bumpp --commit --tag --push"
   },
   "dependencies": {
-    "EventDispatcher": "^2.1.3"
+    "EventDispatcher": "^3.0.0"
   }
 }

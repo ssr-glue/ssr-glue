@@ -27,6 +27,7 @@
     "release": "npx git-ensure -a && npx bumpp --commit --tag --push"
   },
   "dependencies": {
-    "ssr-glue": "^1.0.5"
+    "ssr-glue": "^1.0.5",
+    "EventDispatcher": "^3.0.0"
   }
 }
