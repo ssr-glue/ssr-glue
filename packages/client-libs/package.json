@@ -1,7 +1,7 @@
 {
   "name": "@ssr-glue/client-libs",
   "author": "yaquawa",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "The client side libs for SSR-Glue",
   "license": "MIT",
   "main": "dist/index.js",
@@ -28,6 +28,6 @@
   },
   "dependencies": {
     "EventDispatcher": "^3.0.0",
-    "ssr-glue": "^1.0.7"
+    "ssr-glue": "^1.0.8"
   }
 }
