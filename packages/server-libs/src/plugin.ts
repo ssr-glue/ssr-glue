@@ -23,17 +23,11 @@ export class ServerSidePluginContainer extends BasePluginContainer<
   }
 
   /**
-   * Trigger all the registered `onRequest` hooks of plugins.
+   * Trigger all the registered `request` hooks of plugins.
    *
    * @param request The incoming request.
    */
   async triggerRequest(request: IncomingMessage): Promise<void> {
-    for (const plugin of this.plugins) {
-      if (!plugin.request) {
-        continue
-      }
-
-      await plugin.request.bind(this.pluginHookContext)(request)
-    }
+    return this.triggerHook('request', { strategy: 'series', arguments: [request] })
   }
 }

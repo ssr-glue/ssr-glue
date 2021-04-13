@@ -10,18 +10,20 @@ export type ServerAppOptions = {
 
 export class ServerSideApplication {
   private pluginContainer: ServerSidePluginContainer
+  private readonly triggerCreatedPromise: Promise<void>
   readonly eventBus: EventDispatcher<ServerSideEventMap>
 
   constructor({ plugins = [] }: Partial<ServerAppOptions>) {
     this.eventBus = new EventDispatcher<ServerSideEventMap>()
     this.pluginContainer = new ServerSidePluginContainer(plugins, this.getHookContext())
-    this.pluginContainer.triggerCreated()
+    this.triggerCreatedPromise = this.pluginContainer.triggerCreated()
   }
 
   /**
    * Boot the application, should be called after application was created.
    */
   async boot(): Promise<void> {
+    await this.triggerCreatedPromise
     await this.pluginContainer.triggerBoot()
   }
 

@@ -28,7 +28,7 @@ export type ServerSidePlugin = BasePlugin & {
   /**
    * The hook is called after the plugin be created.
    */
-  created?(this: ServerSidePluginHookContext): void
+  created?(this: ServerSidePluginHookContext): void | Promise<void>
 
   /**
    * The hook is called after the `created` hook.
@@ -62,7 +62,7 @@ export type ClientSidePlugin = BasePlugin & {
   /**
    * The hook be called after the plugin be created.
    */
-  created?(this: ClientSidePluginHookContext): void
+  created?(this: ClientSidePluginHookContext): void | Promise<void>
 
   /**
    * The hook is called after the `created` hook.
@@ -72,6 +72,8 @@ export type ClientSidePlugin = BasePlugin & {
    */
   boot?(this: ClientSidePluginHookContext): void | Promise<void>
 }
+
+type HookName = 'created' | 'boot' | 'request' | 'transformHtml'
 
 /**
  * The base plugin container class
@@ -92,14 +94,8 @@ export abstract class BasePluginContainer<
    * Trigger the all registered `created` hooks of plugins.
    * This method should be called after all plugins be created.
    */
-  triggerCreated() {
-    for (const plugin of this.plugins) {
-      if (!plugin.created) {
-        continue
-      }
-
-      plugin.created.bind(this.pluginHookContext)()
-    }
+  async triggerCreated(): Promise<void> {
+    return this.triggerHook('created')
   }
 
   /**
@@ -107,12 +103,38 @@ export abstract class BasePluginContainer<
    * This method should be called after all plugins be created.
    */
   async triggerBoot(): Promise<void> {
-    const promises = this.plugins
-      .filter((plugin) => plugin.boot)
-      .map((plugin) => {
-        const result = plugin!.boot!.bind(this.pluginHookContext)()
-        return result instanceof Promise ? result : Promise.resolve()
-      })
+    return this.triggerHook('boot')
+  }
+
+  /**
+   * Trigger any hook of plugins.
+   */
+  async triggerHook<Strategy extends 'parallel' | 'series' = 'parallel'>(
+    hookName: HookName,
+    options?: { strategy?: Strategy; arguments?: any[] }
+  ): Promise<void> {
+    const plugins = this.plugins.filter((plugin) => hookName in plugin)
+
+    if (plugins.length === 0) {
+      return
+    }
+
+    const args = options?.arguments || []
+    const strategy = options?.strategy
+
+    if (strategy === 'series') {
+      for (const plugin of plugins) {
+        await (plugin as any)[hookName].apply(this.pluginHookContext, args)
+      }
+
+      return
+    }
+
+    // strategy: parallel
+    const promises = plugins.map((plugin) => {
+      const result = (plugin as any)[hookName].apply(this.pluginHookContext, args)
+      return result instanceof Promise ? result : Promise.resolve()
+    })
 
     await Promise.all(promises)
   }

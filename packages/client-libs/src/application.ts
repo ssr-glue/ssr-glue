@@ -8,16 +8,17 @@ export type ClientAppOptions = {
 
 export class ClientSideApplication {
   private pluginContainer: ClientSidePluginContainer
+  private readonly triggerCreatedPromise: Promise<void>
   readonly eventBus: EventDispatcher<ClientSideEventMap>
 
   constructor({ plugins = [] }: Partial<ClientAppOptions>) {
     this.eventBus = new EventDispatcher<ClientSideEventMap>()
     this.pluginContainer = new ClientSidePluginContainer(plugins, this.getHookContext())
-
-    this.pluginContainer.triggerCreated()
+    this.triggerCreatedPromise = this.pluginContainer.triggerCreated()
   }
 
   async boot(): Promise<void> {
+    await this.triggerCreatedPromise
     await this.pluginContainer.triggerBoot()
   }
 
